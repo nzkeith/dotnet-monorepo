@@ -1,2 +1,3 @@
-dotnet-monorepo is licensed per LICENSE.MIT, except for files ported from
-node-semver which are licensed under the ISC License
+dotnet-monorepo is licensed per LICENSE.MIT except for files in
+src/Monorepo.Core/node-semver, which are licensed per the LICENSE.ISC
+file in that folder.

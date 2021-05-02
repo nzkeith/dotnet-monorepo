@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Monorepo.Tool": {
+      "commandName": "Project",
+      "commandLineArgs": "version major"
+    }
+  }
+}
