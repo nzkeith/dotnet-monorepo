@@ -24,7 +24,7 @@ namespace Monorepo.Tool
 
         private static void Execute(Release release)
         {
-            var git = new Git(".");
+            using var git = new Git(".");
             var projectLoader = new ProjectLoader(git);
             Console.WriteLine(Directory.GetCurrentDirectory());
             var projects = projectLoader.LoadProjects("../../../..");
@@ -40,6 +40,9 @@ namespace Monorepo.Tool
                 Console.WriteLine("ProjectReferences: ");
                 Console.WriteLine(string.Join("\n", project.ProjectReferences));
             }
+
+            //var dependentProjects = GetChangedAndDependentProjects(projects, gitDescribeResult.LastTagName);
+
         }
     }
 }

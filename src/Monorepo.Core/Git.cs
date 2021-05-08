@@ -15,7 +15,16 @@ namespace Monorepo.Core
 
         public void Dispose()
         {
-            _repo?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _repo?.Dispose();
+            }
         }
 
         public string RelativePath(string systemPath)
