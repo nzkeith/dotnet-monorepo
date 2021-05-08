@@ -5,7 +5,14 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monorepo.Core", "src\Monorepo.Core\Monorepo.Core.csproj", "{1E434481-445D-404A-9701-49D30FF1E95A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monorepo.Tool", "src\Monorepo.Tool\Monorepo.Tool.csproj", "{406ED0F9-89A7-44D2-822F-69496D990022}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monorepo.Tool", "src\Monorepo.Tool\Monorepo.Tool.csproj", "{406ED0F9-89A7-44D2-822F-69496D990022}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monorepo.Tests", "src\Monorepo.Tests\Monorepo.Tests.csproj", "{5C93DB06-BCF5-4C14-9EF5-24889A540972}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63EA230F-FC52-4AD5-8CE5-DD44A7558834}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +28,10 @@ Global
 		{406ED0F9-89A7-44D2-822F-69496D990022}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{406ED0F9-89A7-44D2-822F-69496D990022}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{406ED0F9-89A7-44D2-822F-69496D990022}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C93DB06-BCF5-4C14-9EF5-24889A540972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C93DB06-BCF5-4C14-9EF5-24889A540972}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C93DB06-BCF5-4C14-9EF5-24889A540972}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C93DB06-BCF5-4C14-9EF5-24889A540972}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
