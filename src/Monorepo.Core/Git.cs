@@ -36,5 +36,10 @@ namespace Monorepo.Core
             }
             return relativePath;
         }
+
+        public string SystemPath(string relativePath)
+        {
+            return Path.GetFullPath(relativePath, _repo.Info.WorkingDirectory);
+        }
     }
 }
