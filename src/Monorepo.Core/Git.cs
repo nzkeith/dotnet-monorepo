@@ -1,6 +1,7 @@
 using LibGit2Sharp;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Monorepo.Core
 {
@@ -13,18 +14,36 @@ namespace Monorepo.Core
             _repo = new Repository(Repository.Discover(repositoryPath));
         }
 
-        public void Dispose()
+        public record DescribeResult(string LastTagName, int RefCount, string Sha);
+
+        public DescribeResult Describe()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            var commit = _repo.Head.Tip;
+            var gitOutput = _repo.Describe(commit, new DescribeOptions
+            {
+                AlwaysRenderLongFormat = true,
+            });
+
+            var match = Regex.Match(gitOutput, @"^((?:.*@)?(.*))-(\d+)-g([0-9a-f]+)$");
+            if (!match.Success)
+            {
+                throw new MonorepoException($"Failed to parse git describe output '{gitOutput}'");
+            }
+
+            return new DescribeResult(
+                LastTagName: match.Groups[2].Value,
+                RefCount: int.Parse(match.Groups[3].Value),
+                Sha: match.Groups[4].Value);
         }
 
-        protected virtual void Dispose(bool disposing)
+        public TreeChanges Diff(string tagName, string gitPath)
         {
-            if (disposing)
-            {
-                _repo?.Dispose();
-            }
+            var headTree = _repo.Head.Tip.Tree;
+            var tag = _repo.Tags[tagName];
+            var tagCommit = _repo.Lookup<Commit>(tag.Target.Sha);
+            var tagTree = tagCommit.Tree;
+
+            return _repo.Diff.Compare<TreeChanges>(tagTree, headTree, new[] { gitPath });
         }
 
         public string RelativePath(string systemPath)
@@ -41,5 +60,21 @@ namespace Monorepo.Core
         {
             return Path.GetFullPath(relativePath, _repo.Info.WorkingDirectory);
         }
+
+        #region IDisposable
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _repo?.Dispose();
+            }
+        }
+        #endregion
     }
 }

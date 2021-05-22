@@ -1,7 +1,10 @@
 using McMaster.Extensions.CommandLineUtils;
 using Monorepo.Core;
+using NuGet.Versioning;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Monorepo.Tool
 {
@@ -41,8 +44,44 @@ namespace Monorepo.Tool
                 Console.WriteLine(string.Join("\n", project.ProjectReferences));
             }
 
-            //var dependentProjects = GetChangedAndDependentProjects(projects, gitDescribeResult.LastTagName);
+            var dependentProjects = GetChangedAndDependentProjects(git, projects, git.Describe().LastTagName);
 
+            Console.WriteLine();
+            Console.WriteLine("Changed projects and their dependents:");
+            foreach (var project in dependentProjects)
+            {
+                Console.WriteLine($"{project.PackageId} {project.Version}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("New project versions for release:");
+            foreach (var project in dependentProjects)
+            {
+                var oldVersion = SemanticVersion.Parse(project.Version);
+                var newVersion = oldVersion.Increment(release);
+                Console.WriteLine($"{project.PackageId} {project.Version} -> {newVersion}");
+            }
+        }
+
+        private static IList<Project> GetChangedAndDependentProjects(Git git, IList<Project> projects, string lastTagName)
+        {
+            var projectGraphBuilder = new ProjectGraphBuilder(projects);
+            var projectGraph = projectGraphBuilder.Build();
+
+            var changedProjects = DetectProjectsChangedSince(git, projects, lastTagName);
+            var dependentProjects = projectGraph.CollectDependentProjects(changedProjects);
+            return dependentProjects;
+        }
+
+        private static IList<Project> DetectProjectsChangedSince(Git git, IEnumerable<Project> projects, string lastTagName)
+        {
+            return projects.Where(p => ProjectHasChanged(git, p, lastTagName)).ToList();
+        }
+
+        private static bool ProjectHasChanged(Git git, Project project, string lastTagName)
+        {
+            var treeChanges = git.Diff(lastTagName, project.BaseGitPath);
+            return treeChanges.Any();
         }
     }
 }
