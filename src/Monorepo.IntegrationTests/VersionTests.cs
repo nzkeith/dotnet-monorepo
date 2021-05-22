@@ -74,11 +74,11 @@ namespace Monorepo.IntegrationTests
             repo.Index.Write();
             repo.Commit("commit message 2", author: committer, committer: committer);
 
-            var originAbsolutePath = git.Clone(originRepoPath, new CloneOptions
+            var originAbsoluteRepoPath = git.Clone(originRepoPath, new CloneOptions
             {
                 IsBare = true
             });
-            git.SetRemoteUrl("origin", originAbsolutePath);
+            git.SetRemoteUrl("origin", originAbsoluteRepoPath);
             git.SetUpstreamBranch("master", "origin", "refs/heads/master");
 
             var stdOutBuffer = new StringBuilder();

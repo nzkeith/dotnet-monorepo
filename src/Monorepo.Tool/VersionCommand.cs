@@ -60,7 +60,17 @@ namespace Monorepo.Tool
                 var oldVersion = SemanticVersion.Parse(project.Version);
                 var newVersion = oldVersion.Increment(release);
                 Console.WriteLine($"{project.PackageId} {project.Version} -> {newVersion}");
+
+                // Update project versions
+                var projectEditor = new ProjectEditor(project.ProjFilePath);
+                projectEditor.SetVersion(newVersion.ToString());
             }
+
+            // Update project versions and commit
+
+            // Tag commit
+
+            // Push commit and tag
         }
 
         private static IList<Project> GetChangedAndDependentProjects(Git git, IList<Project> projects, string lastTagName)
