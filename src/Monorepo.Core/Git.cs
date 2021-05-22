@@ -46,6 +46,24 @@ namespace Monorepo.Core
             return _repo.Diff.Compare<TreeChanges>(tagTree, headTree, new[] { gitPath });
         }
 
+        public string Clone(string path, CloneOptions? options = null)
+        {
+            return Repository.Clone(_repo.Info.Path, path, options);
+        }
+
+        public void SetRemoteUrl(string remoteName, string url)
+        {
+            _repo.Network.Remotes.Update(remoteName, updater => updater.Url = url);
+        }
+
+        public void SetUpstreamBranch(string branchName, string remoteName, string upstreamBranchName)
+        {
+            var branch = _repo.Branches[branchName];
+            _repo.Branches.Update(branch,
+                b => b.Remote = remoteName,
+                b => b.UpstreamBranch = upstreamBranchName);
+        }
+
         public string RelativePath(string systemPath)
         {
             var relativePath = Path.GetRelativePath(_repo.Info.WorkingDirectory, systemPath);

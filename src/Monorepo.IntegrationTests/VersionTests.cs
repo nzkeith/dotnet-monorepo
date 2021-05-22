@@ -26,9 +26,11 @@ namespace Monorepo.IntegrationTests
         {
             _testOutputHelper.WriteLine(Directory.GetCurrentDirectory());
 
-            var repoPath = "repos/repo1";
+            var repoPath = "repos/working/repo1";
+            var originRepoPath = "repos/origin/repo1.git";
 
             DeleteDirectory(repoPath);
+            DeleteDirectory(originRepoPath);
 
             var dotGitPath = Repository.Init(repoPath);
             using var git = new Git(dotGitPath);
@@ -72,17 +74,22 @@ namespace Monorepo.IntegrationTests
             repo.Index.Write();
             repo.Commit("commit message 2", author: committer, committer: committer);
 
+            var originAbsolutePath = git.Clone(originRepoPath, new CloneOptions
+            {
+                IsBare = true
+            });
+            git.SetRemoteUrl("origin", originAbsolutePath);
+            git.SetUpstreamBranch("master", "origin", "refs/heads/master");
+
             var stdOutBuffer = new StringBuilder();
             var stdErrBuffer = new StringBuilder();
-
             var result = await Cli.Wrap("MonoRepo.Tool.exe")
-                .WithArguments("version minor")
+                .WithArguments("version patch")
                 .WithWorkingDirectory(repoPath)
                 .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                 .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteAsync();
-
             var stdout = stdOutBuffer.ToString();
             var stderr = stdErrBuffer.ToString();
 
