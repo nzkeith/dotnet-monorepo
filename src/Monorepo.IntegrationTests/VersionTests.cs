@@ -1,9 +1,12 @@
+using CliWrap;
 using LibGit2Sharp;
 using Monorepo.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,7 +22,7 @@ namespace Monorepo.IntegrationTests
         }
 
         [Fact]
-        public void Version()
+        public async Task Version()
         {
             _testOutputHelper.WriteLine(Directory.GetCurrentDirectory());
 
@@ -42,30 +45,55 @@ namespace Monorepo.IntegrationTests
 
             using var repo = new Repository(dotGitPath);
 
-            foreach (var projectSpec in projectSpecs)
+            void CreateAndStageProject(ProjectSpec projectSpec)
             {
                 var csprojFilePath = CreateProjectFile(packagesPath, projectSpec);
                 var csprojRelativePath = git.RelativePath(csprojFilePath);
                 repo.Index.Add(csprojRelativePath);
             }
 
-            repo.Index.Write();
-
-            repo.Commit("message",
-                new Signature("author", "author@example.com", DateTimeOffset.Now),
-                new Signature("committer", "commiter@example.com", DateTimeOffset.Now));
-        }
-
-        private static void DeleteDirectory(string path)
-        {
-            if (File.Exists(path))
+            void CreateAndStageFile(string relativePath, string contents)
             {
-                throw new Exception($"{nameof(path)} is a file: {path}");
+                File.WriteAllText(git.SystemPath(relativePath), contents);
+                repo.Index.Add(relativePath);
             }
 
-            if (Directory.Exists(path))
+            foreach (var projectSpec in projectSpecs)
             {
-                Directory.Delete(path, recursive: true);
+                CreateAndStageProject(projectSpec);
+            }
+            repo.Index.Write();
+
+            var committer = new Signature("committer", "committer@example.com", DateTimeOffset.Now);
+            repo.Commit("commit message 1", author: committer, committer: committer);
+            repo.ApplyTag("0.0.1", tagger: committer, "tag message");
+
+            CreateAndStageFile("packages/Lib1/Class1.cs", contents: "");
+            repo.Index.Write();
+            repo.Commit("commit message 2", author: committer, committer: committer);
+
+            var stdOutBuffer = new StringBuilder();
+            var stdErrBuffer = new StringBuilder();
+
+            var result = await Cli.Wrap("MonoRepo.Tool.exe")
+                .WithArguments("version minor")
+                .WithWorkingDirectory(repoPath)
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                .WithValidation(CommandResultValidation.None)
+                .ExecuteAsync();
+
+            var stdout = stdOutBuffer.ToString();
+            var stderr = stdErrBuffer.ToString();
+
+            if (!string.IsNullOrEmpty(stdout))
+            {
+                _testOutputHelper.WriteLine("stdout: " + stdout);
+            }
+
+            if (!string.IsNullOrEmpty(stderr))
+            {
+                _testOutputHelper.WriteLine("stderr: " + stderr);
             }
         }
 
@@ -94,6 +122,33 @@ namespace Monorepo.IntegrationTests
 ");
 
             return csprojFilePath;
+        }
+
+        private static void DeleteDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || path.Length < 10)
+            {
+                throw new Exception($"Refusing to delete dangerously short directory '{path}'");
+            }
+
+            if (File.Exists(path))
+            {
+                throw new Exception($"{nameof(path)} is a file: {path}");
+            }
+
+            if (!Directory.Exists(path))
+            {
+                return;
+            }
+
+            var directory = new DirectoryInfo(path) { Attributes = FileAttributes.Normal };
+
+            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = FileAttributes.Normal;
+            }
+
+            directory.Delete(recursive: true);
         }
     }
 }
