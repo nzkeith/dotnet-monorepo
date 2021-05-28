@@ -24,5 +24,9 @@ namespace Monorepo.Core
         public static implicit operator SystemPath(string value) => new(value);
 
         public override string ToString() => _value;
+
+        public override bool Equals(object? obj) => obj is SystemPath systemPath && _value.Equals(systemPath._value);
+
+        public override int GetHashCode() => _value.GetHashCode();
     }
 }

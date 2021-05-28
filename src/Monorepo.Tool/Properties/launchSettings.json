@@ -2,7 +2,8 @@
   "profiles": {
     "Monorepo.Tool": {
       "commandName": "Project",
-      "commandLineArgs": "version major"
+      "commandLineArgs": "version major",
+      "workingDirectory": "C:\\b\\dotnet-monorepo\\src\\Monorepo.IntegrationTests\\bin\\Debug\\net5.0\\repos\\working\\repo1"
     }
   }
 }

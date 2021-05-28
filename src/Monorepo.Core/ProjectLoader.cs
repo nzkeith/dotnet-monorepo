@@ -45,7 +45,7 @@ namespace Monorepo.Core
                     .XPathSelectElements("./ItemGroup/ProjectReference")
                     .Select(el => el.Attribute("Include")?.Value)
                     .Where(value => value != null)
-                    .Select(relativePath => Path.GetFullPath(relativePath!, basePath))
+                    .Select(relativePath => new SystemPath(Path.GetFullPath(relativePath!, basePath)))
                     .ToList();
 
                 projects.Add(new Project(

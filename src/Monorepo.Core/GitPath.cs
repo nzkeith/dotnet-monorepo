@@ -28,5 +28,9 @@ namespace Monorepo.Core
         public static implicit operator GitPath(string value) => new(value);
 
         public override string ToString() => _value;
+
+        public override bool Equals(object? obj) => obj is GitPath gitPath && _value.Equals(gitPath._value);
+
+        public override int GetHashCode() => _value.GetHashCode();
     }
 }

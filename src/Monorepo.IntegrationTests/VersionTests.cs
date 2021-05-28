@@ -66,8 +66,9 @@ namespace Monorepo.IntegrationTests
             }
             repo.Index.Write();
 
+            git.Commit("commit message 1");
+
             var committer = new Signature("committer", "committer@example.com", DateTimeOffset.Now);
-            repo.Commit("commit message 1", author: committer, committer: committer);
             repo.ApplyTag("0.0.1", tagger: committer, "tag message");
 
             CreateAndStageFile("packages/Lib1/Class1.cs", contents: "");

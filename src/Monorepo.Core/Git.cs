@@ -14,6 +14,17 @@ namespace Monorepo.Core
             _repo = new Repository(Repository.Discover(repositoryPath));
         }
 
+        public string Clone(string path, CloneOptions? options = null)
+        {
+            return Repository.Clone(_repo.Info.Path, path, options);
+        }
+
+        public void Commit(string message)
+        {
+            var committer = new Signature("committer", "committer@example.com", DateTimeOffset.Now); // TODO: Infer actual committer
+            _repo.Commit(message, author: committer, committer: committer);
+        }
+
         public record DescribeResult(string LastTagName, int RefCount, string Sha);
 
         public DescribeResult Describe()
@@ -46,9 +57,10 @@ namespace Monorepo.Core
             return _repo.Diff.Compare<TreeChanges>(tagTree, headTree, new[] { gitPath });
         }
 
-        public string Clone(string path, CloneOptions? options = null)
+        public void Tag(string tagName, string message)
         {
-            return Repository.Clone(_repo.Info.Path, path, options);
+            var tagger = new Signature("tagger", "tagger@example.com", DateTimeOffset.Now); // TODO: Infer actual tagger
+            _repo.ApplyTag(tagName, tagger, message);
         }
 
         public void SetRemoteUrl(string remoteName, string url)

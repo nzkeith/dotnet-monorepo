@@ -9,5 +9,5 @@ namespace Monorepo.Core
         GitPath BaseGitPath,
         string PackageId,
         string Version,
-        IList<string> ProjectReferences);
+        IList<SystemPath> ProjectReferences);
 }

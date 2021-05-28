@@ -57,6 +57,7 @@ namespace Monorepo.Tool
 
             Console.WriteLine();
             Console.WriteLine("New project versions for release:");
+            var tagNames = new List<string>();
             foreach (var project in dependentProjects)
             {
                 var oldVersion = SemanticVersion.Parse(project.Version);
@@ -67,15 +68,17 @@ namespace Monorepo.Tool
                 var projectEditor = new ProjectEditor(project.ProjFilePath);
                 projectEditor.SetVersion(newVersion.ToString());
                 git.StageFile(project.ProjFileGitPath);
+                tagNames.Add($"{project.PackageId}@{newVersion}");
             }
 
-            // Commit
-            //git.Commit("commit message 1", author: committer, committer: committer);
-            //git.ApplyTags("0.0.1", tagger: committer, "tag message");
+            git.Commit("Updated versions of changed projects");
 
-            // Tag commit
+            foreach (var tagName in tagNames)
+            {
+                git.Tag(tagName, message: tagName);
+            }
 
-            // Push commit and tag
+            // Push commit and tags
         }
 
         private static IList<Project> GetChangedAndDependentProjects(Git git, IList<Project> projects, string lastTagName)
