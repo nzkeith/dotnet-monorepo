@@ -7,9 +7,9 @@ namespace Monorepo.Core
 {
     public class ProjectEditor
     {
-        private readonly string _projectPath;
+        private readonly SystemPath _projectPath;
 
-        public ProjectEditor(string projectPath)
+        public ProjectEditor(SystemPath projectPath)
         {
             _projectPath = projectPath;
         }

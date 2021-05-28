@@ -53,6 +53,8 @@ namespace Monorepo.Tool
                 Console.WriteLine($"{project.PackageId} {project.Version}");
             }
 
+            // TODO: Exit early if nothing to do
+
             Console.WriteLine();
             Console.WriteLine("New project versions for release:");
             foreach (var project in dependentProjects)
@@ -64,9 +66,12 @@ namespace Monorepo.Tool
                 // Update project versions
                 var projectEditor = new ProjectEditor(project.ProjFilePath);
                 projectEditor.SetVersion(newVersion.ToString());
+                git.StageFile(project.ProjFileGitPath);
             }
 
-            // Update project versions and commit
+            // Commit
+            //git.Commit("commit message 1", author: committer, committer: committer);
+            //git.ApplyTags("0.0.1", tagger: committer, "tag message");
 
             // Tag commit
 

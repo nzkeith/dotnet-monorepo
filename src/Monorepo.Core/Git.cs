@@ -64,19 +64,20 @@ namespace Monorepo.Core
                 b => b.UpstreamBranch = upstreamBranchName);
         }
 
-        public string RelativePath(string systemPath)
+        public void StageFile(GitPath gitPath)
         {
-            var relativePath = Path.GetRelativePath(_repo.Info.WorkingDirectory, systemPath);
-            if (Path.DirectorySeparatorChar == '\\')
-            {
-                relativePath = relativePath.Replace('\\', '/');
-            }
-            return relativePath;
+            _repo.Index.Add(gitPath);
+            _repo.Index.Write();
         }
 
-        public string SystemPath(string relativePath)
+        public GitPath GitPath(SystemPath systemPath)
         {
-            return Path.GetFullPath(relativePath, _repo.Info.WorkingDirectory);
+            return Path.GetRelativePath(_repo.Info.WorkingDirectory, systemPath);
+        }
+
+        public SystemPath SystemPath(GitPath gitPath)
+        {
+            return Path.GetFullPath(gitPath, _repo.Info.WorkingDirectory);
         }
 
         #region IDisposable

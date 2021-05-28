@@ -50,7 +50,7 @@ namespace Monorepo.IntegrationTests
             void CreateAndStageProject(ProjectSpec projectSpec)
             {
                 var csprojFilePath = CreateProjectFile(packagesPath, projectSpec);
-                var csprojRelativePath = git.RelativePath(csprojFilePath);
+                var csprojRelativePath = git.GitPath(csprojFilePath);
                 repo.Index.Add(csprojRelativePath);
             }
 

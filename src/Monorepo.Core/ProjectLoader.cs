@@ -20,7 +20,7 @@ namespace Monorepo.Core
         {
             var matcher = new Matcher();
             matcher.AddInclude("**/*.csproj");
-            var csprojPaths = matcher.GetResultsInFullPath(rootDirectory);
+            var csprojPaths = matcher.GetResultsInFullPath(rootDirectory).Select(path => new SystemPath(path));
 
             var csprojByPath = csprojPaths.ToDictionary(
                 path => path,
@@ -29,10 +29,15 @@ namespace Monorepo.Core
             var projects = new List<Project>();
             foreach (var (projFilePath, csproj) in csprojByPath)
             {
-                var projFileGitPath = _git.RelativePath(projFilePath);
+                var projFileGitPath = _git.GitPath(projFilePath);
 
                 var basePath = Path.GetDirectoryName(projFilePath);
-                var baseGitPath = _git.RelativePath(basePath);
+                if (basePath == null)
+                {
+                    throw new MonorepoException($"Directory name for {nameof(projFilePath)} was unexpectedly null: '{projFilePath}'");
+                }
+
+                var baseGitPath = _git.GitPath(basePath);
 
                 var packageId = csproj.XPathSelectElement("./PropertyGroup/PackageId")?.Value;
                 var version = csproj.XPathSelectElement("./PropertyGroup/Version")?.Value;
@@ -40,7 +45,7 @@ namespace Monorepo.Core
                     .XPathSelectElements("./ItemGroup/ProjectReference")
                     .Select(el => el.Attribute("Include")?.Value)
                     .Where(value => value != null)
-                    .Select(relativePath => Path.GetFullPath(relativePath, basePath!))
+                    .Select(relativePath => Path.GetFullPath(relativePath!, basePath))
                     .ToList();
 
                 projects.Add(new Project(
