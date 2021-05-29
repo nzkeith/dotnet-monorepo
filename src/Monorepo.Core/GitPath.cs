@@ -6,7 +6,7 @@ namespace Monorepo.Core
     /// <summary>Represents a path relative to a git repo root, e.g. relative/path/to/file.txt</summary>
     public class GitPath : IStringLike
     {
-        public string Create(string value)
+        public string FromString(string value)
         {
             if (Path.IsPathRooted(value))
             {

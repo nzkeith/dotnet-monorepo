@@ -4,7 +4,7 @@ namespace Monorepo.Core
 {
     public interface IStringLike
     {
-        string Create(string value) => value;
+        string FromString(string value) => value;
     }
 
     public class StringLike<T> where T : IStringLike, new()
@@ -15,12 +15,17 @@ namespace Monorepo.Core
 
         public StringLike(string value)
         {
+            _value = FromString(value);
+        }
+
+        private static string FromString(string value)
+        {
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
 
-            _value = _T.Create(value);
+            return _T.FromString(value);
         }
 
         public static implicit operator string(StringLike<T> systemPath) => systemPath._value;
@@ -29,7 +34,12 @@ namespace Monorepo.Core
 
         public override string ToString() => _value;
 
-        public override bool Equals(object? obj) => obj is StringLike<T> other && _value.Equals(other._value);
+        public override bool Equals(object? obj) => obj switch
+        {
+            (StringLike<T> other) => _value.Equals(other._value),
+            (string other) => _value.Equals(FromString(other)),
+            _ => false
+        };
 
         public override int GetHashCode() => _value.GetHashCode();
     }
