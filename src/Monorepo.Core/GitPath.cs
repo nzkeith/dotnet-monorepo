@@ -4,12 +4,9 @@ using System.IO;
 namespace Monorepo.Core
 {
     /// <summary>Represents a path relative to a git repo root, e.g. relative/path/to/file.txt</summary>
-    public class GitPath : StringLike
+    public class GitPath : IStringLike
     {
-        public GitPath(string value) : base(Prepare(value))
-        { }
-
-        private static string Prepare(string value)
+        public string Create(string value)
         {
             if (Path.IsPathRooted(value))
             {
@@ -23,9 +20,5 @@ namespace Monorepo.Core
 
             return value;
         }
-
-        public static implicit operator string(GitPath gitPath) => (StringLike)gitPath;
-
-        public static implicit operator GitPath(string value) => new(value);
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 namespace Monorepo.Core
 {
     public record Project(
-        SystemPath ProjFilePath,
-        GitPath ProjFileGitPath,
-        SystemPath BasePath,
-        GitPath BaseGitPath,
+        StringLike<SystemPath> ProjFilePath,
+        StringLike<GitPath> ProjFileGitPath,
+        StringLike<SystemPath> BasePath,
+        StringLike<GitPath> BaseGitPath,
         string PackageId,
         string Version,
-        IList<SystemPath> ProjectReferences);
+        IList<StringLike<SystemPath>> ProjectReferences);
 }

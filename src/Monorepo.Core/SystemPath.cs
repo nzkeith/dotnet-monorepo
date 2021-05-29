@@ -3,12 +3,9 @@ using System.IO;
 namespace Monorepo.Core
 {
     /// <summary>Represents an absolute system path, e.g. C:/absolute/path/to/file.txt</summary>
-    public class SystemPath : StringLike
+    public class SystemPath : IStringLike
     {
-        public SystemPath(string value) : base(Prepare(value))
-        { }
-
-        private static string Prepare(string value)
+        public string Create(string value)
         {
             var path = Path.GetFullPath(value);
 
@@ -19,9 +16,5 @@ namespace Monorepo.Core
 
             return path;
         }
-
-        public static implicit operator string(SystemPath systemPath) => (StringLike)systemPath;
-
-        public static implicit operator SystemPath(string value) => new(value);
     }
 }

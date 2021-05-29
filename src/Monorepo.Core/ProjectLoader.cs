@@ -20,7 +20,7 @@ namespace Monorepo.Core
         {
             var matcher = new Matcher();
             matcher.AddInclude("**/*.csproj");
-            var csprojPaths = matcher.GetResultsInFullPath(rootDirectory).Select(path => new SystemPath(path));
+            var csprojPaths = matcher.GetResultsInFullPath(rootDirectory).Select(path => new StringLike<SystemPath>(path));
 
             var csprojByPath = csprojPaths.ToDictionary(
                 path => path,
@@ -45,7 +45,7 @@ namespace Monorepo.Core
                     .XPathSelectElements("./ItemGroup/ProjectReference")
                     .Select(el => el.Attribute("Include")?.Value)
                     .Where(value => value != null)
-                    .Select(relativePath => new SystemPath(Path.GetFullPath(relativePath!, basePath)))
+                    .Select(relativePath => new StringLike<SystemPath>(Path.GetFullPath(relativePath!, basePath)))
                     .ToList();
 
                 projects.Add(new Project(

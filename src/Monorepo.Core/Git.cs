@@ -76,18 +76,18 @@ namespace Monorepo.Core
                 b => b.UpstreamBranch = upstreamBranchName);
         }
 
-        public void StageFile(GitPath gitPath)
+        public void StageFile(StringLike<GitPath> gitPath)
         {
             _repo.Index.Add(gitPath);
             _repo.Index.Write();
         }
 
-        public GitPath GitPath(SystemPath systemPath)
+        public StringLike<GitPath> GitPath(StringLike<SystemPath> systemPath)
         {
             return Path.GetRelativePath(_repo.Info.WorkingDirectory, systemPath);
         }
 
-        public SystemPath SystemPath(GitPath gitPath)
+        public StringLike<SystemPath> SystemPath(StringLike<GitPath> gitPath)
         {
             return Path.GetFullPath(gitPath, _repo.Info.WorkingDirectory);
         }
