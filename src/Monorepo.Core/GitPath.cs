@@ -24,7 +24,7 @@ namespace Monorepo.Core
             return value;
         }
 
-        public static implicit operator string(GitPath systemPath) => systemPath.Value;
+        public static implicit operator string(GitPath gitPath) => (StringLike)gitPath;
 
         public static implicit operator GitPath(string value) => new(value);
     }

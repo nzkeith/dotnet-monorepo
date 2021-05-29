@@ -20,7 +20,7 @@ namespace Monorepo.Core
             return path;
         }
 
-        public static implicit operator string(SystemPath systemPath) => systemPath.Value;
+        public static implicit operator string(SystemPath systemPath) => (StringLike)systemPath;
 
         public static implicit operator SystemPath(string value) => new(value);
     }

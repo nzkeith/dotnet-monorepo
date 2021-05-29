@@ -4,7 +4,7 @@ namespace Monorepo.Core
 {
     public class StringLike
     {
-        protected string Value { get; }
+        private string Value { get; }
 
         public StringLike(string value)
         {
