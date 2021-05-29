@@ -4,11 +4,12 @@ using System.IO;
 namespace Monorepo.Core
 {
     /// <summary>Represents a path relative to a git repo root, e.g. relative/path/to/file.txt</summary>
-    public class GitPath
+    public class GitPath : StringLike
     {
-        private readonly string _value;
+        public GitPath(string value) : base(Prepare(value))
+        { }
 
-        public GitPath(string value)
+        private static string Prepare(string value)
         {
             if (Path.IsPathRooted(value))
             {
@@ -20,17 +21,11 @@ namespace Monorepo.Core
                 value = value.Replace(Path.DirectorySeparatorChar, '/');
             }
 
-            _value = value;
+            return value;
         }
 
-        public static implicit operator string(GitPath gitPath) => gitPath._value;
+        public static implicit operator string(GitPath systemPath) => systemPath.Value;
 
         public static implicit operator GitPath(string value) => new(value);
-
-        public override string ToString() => _value;
-
-        public override bool Equals(object? obj) => obj is GitPath gitPath && _value.Equals(gitPath._value);
-
-        public override int GetHashCode() => _value.GetHashCode();
     }
 }
